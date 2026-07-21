@@ -10,10 +10,10 @@ const serif = Instrument_Serif({ variable: "--font-serif", weight: "400", style:
 export const metadata: Metadata = {
   metadataBase: new URL("https://stockcat-site.vercel.app"),
   title: "STOCKCAT — One cat. Every job.",
-  description: "313 stock photos. One overworked tabby. $STOCKCAT is the most employed cat on the internet.",
+  description: "One overworked tabby, a public campaign image library, and a live Robinhood Chain wallet X-ray.",
   openGraph: {
     title: "STOCKCAT — The cat is always in stock.",
-    description: "One cat. Every job. 313 stock photos and counting.",
+    description: "One cat. Every job. Live Robinhood Chain assets and an open campaign image library.",
     images: [{ url: "/images/stockcat-og.jpg", width: 1200, height: 630, alt: "STOCKCAT campaign card" }],
   },
   twitter: { card: "summary_large_image", title: "STOCKCAT", description: "One cat. Every job.", images: ["/images/stockcat-og.jpg"] },

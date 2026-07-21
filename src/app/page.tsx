@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ImageLibraryPanel } from "@/components/ImageLibraryPanel";
+import { AssetBasketPanel } from "@/components/AssetBasketPanel";
+import { PortfolioPanel } from "@/components/PortfolioPanel";
 
 const jobs = [
   { id: "fisherman", label: "FISHERMAN", query: "cat fisherman commercial stock photo", image: "/images/cat-00.webp", no: "001", note: "Maritime experience. Zero fish delivered." },
@@ -12,7 +15,7 @@ const jobs = [
   { id: "king", label: "ROYALTY", query: "cat king crown throne isolated", image: "/images/cat-12.webp", no: "313", note: "Royalty-free? He heard royalty." },
 ] as const;
 
-const panelNames = ["THE CAT", "THE LORE", "THE CATALOG", "CASTING", "THE LISTING", "CLOCK OUT"];
+const panelNames = ["THE CAT", "THE LORE", "THE CATALOG", "IMAGE LIBRARY", "STOCK SHELF", "WALLET X-RAY", "CASTING", "THE LISTING", "CLOCK OUT"];
 
 function CropMarks() {
   return <span className="cropMarks" aria-hidden="true"><i /><i /><i /><i /></span>;
@@ -129,7 +132,7 @@ export default function Home() {
       <nav className={`nav ${panel > 0 ? "scrolled" : ""}`}>
         <button className="brand" onClick={() => goTo(0)} aria-label="Stockcat home"><span className="brandBox">SC</span><span>STOCKCAT</span></button>
         <div className="navCenter"><span className="liveDot" /> {panelNames[panel]} <span className="navFraction">0{panel + 1} / 0{panelNames.length}</span></div>
-        <button className="navCta" onClick={() => goTo(2)}>OPEN CATALOG <ArrowIcon /></button>
+        <button className="navCta" onClick={() => goTo(5)}>CHECK WALLET <ArrowIcon /></button>
       </nav>
 
       <div className="horizontalViewport" ref={viewportRef} onScroll={onHorizontalScroll} tabIndex={0} aria-label="Horizontal Stockcat experience">
@@ -199,9 +202,21 @@ export default function Home() {
             </div>
           </section>
 
-          <section className={panelClass(3, "casting")}>
+          <section className={panelClass(3, "library")} id="library">
+            <ImageLibraryPanel />
+          </section>
+
+          <section className={panelClass(4, "basket")} id="basket">
+            <AssetBasketPanel />
+          </section>
+
+          <section className={panelClass(5, "portfolio")} id="portfolio">
+            <PortfolioPanel />
+          </section>
+
+          <section className={panelClass(6, "casting")}>
             <div className="castingCopy panelReveal">
-              <span className="sectionIndex light">03 / CASTING DESK</span>
+              <span className="sectionIndex light">06 / CASTING DESK</span>
               <h2>GIVE HIM<br /><em>ANOTHER</em> JOB.</h2>
               <p>Press the button. Create zero jobs.<br />Give all of them to the same cat.</p>
               <button className="hireButton" onClick={hireCat}>HIRE THE CAT <span>+</span></button>
@@ -219,18 +234,18 @@ export default function Home() {
             </div>
           </section>
 
-          <section className={panelClass(4, "listing")}>
-            <div className="listingTop panelReveal"><span className="sectionIndex">04 / THE LISTING</span><span>THIS IS NOT FINANCIAL ADVICE. IT IS A CAT.</span></div>
+          <section className={panelClass(7, "listing")}>
+            <div className="listingTop panelReveal"><span className="sectionIndex">07 / THE LISTING</span><span>THIS IS NOT FINANCIAL ADVICE. IT IS A CAT.</span></div>
             <div className="listingTitle panelReveal"><h2>THE WORLD’S<br />FIRST <em>STOCK</em> CAT.</h2><div className="tickerCard"><span>TICKER</span><b>$STOCKCAT</b><small>STATUS · NOT YET TRADING</small><i /></div></div>
             <div className="facts panelReveal">
-              <div><span>01</span><b>THE SUPPLY</b><p>Confirmed at launch. No invented token math.</p></div>
-              <div><span>02</span><b>THE CONTRACT</b><p>Not issued. Verify only from the official site.</p></div>
-              <div><span>03</span><b>THE UTILITY</b><p>Employ the cat. Make the memes. Full job description.</p></div>
+              <div><span>01</span><b>THE FEES</b><p>A configured share funds verified Robinhood Stock Token purchases.</p></div>
+              <div><span>02</span><b>THE VAULT</b><p>Dedicated, public and readable directly from Robinhood Chain.</p></div>
+              <div><span>03</span><b>YOUR SHARE</b><p>Wallet balance ÷ eligible supply × every asset held by the vault.</p></div>
             </div>
             <div className="listingTape">NOT A SECURITY · BARELY AN EMPLOYEE · NOT A SECURITY · BARELY AN EMPLOYEE ·</div>
           </section>
 
-          <section className={panelClass(5, "finale")}>
+          <section className={panelClass(8, "finale")}>
             <div className="finalImage"><Image src="/images/cat-00.webp" alt="Stockcat working as a fisherman" fill loading="eager" sizes="100vw" /><span className="giantWatermark">STOCKCAT</span><span className="finalScan" /></div>
             <div className="finalCopy panelReveal"><span className="sectionIndex light">END OF SEARCH RESULTS</span><h2>HE’S<br />HIRED.</h2><p>Clock in before the cat gets another job.</p><button onClick={() => goTo(0)} className="button finaleButton">START AGAIN <ArrowIcon /></button></div>
             <footer><div>STOCKCAT · ONE CAT. EVERY JOB.</div><a href="https://www.shutterstock.com/g/Iryna+Kuznetsova?sort=popular" target="_blank" rel="noreferrer">SOURCE PORTFOLIO ↗</a></footer>

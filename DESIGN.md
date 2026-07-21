@@ -25,12 +25,15 @@ Deadpan, overbooked, oddly professional. Internet-native rather than crypto-temp
 
 ## Motion
 
-The site is a single sideways contact sheet: six viewport-sized panels with native horizontal snap. Mouse wheel motion is translated to horizontal travel; touch uses direct swipe; keyboard arrows, Page Up/Down, Home, and End are supported. Panel changes use a finite darkroom-shutter wipe, blur-rise content staging, live progress, and image-search swaps. Physical secondary motion includes scanning lines, flash exposure, crop-mark pulses, contact-sheet parallax, casting-card tilt, and a booking-confetti burst. No vertical page scroll, neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states and immediate snapping.
+The site is a single sideways contact sheet: nine viewport-sized panels with native horizontal snap. Mouse wheel motion is translated to horizontal travel; touch uses direct swipe; keyboard arrows, Page Up/Down, Home, and End are supported. Panel changes use a finite darkroom-shutter wipe, blur-rise content staging, live progress, and image-search swaps. Physical secondary motion includes scanning lines, flash exposure, crop-mark pulses, contact-sheet parallax, casting-card tilt, and a booking-confetti burst. No vertical page scroll, neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states and immediate snapping.
 
 ## Interaction model
 
 - Image-search hero with cycling query
 - Clickable job catalog filters
+- Full campaign image library with direct originals
+- Live Robinhood Stock Token market shelf
+- Read-only wallet X-ray and deterministic buyback-vault attribution
 - “Hire the cat” casting generator
 - Contract status button that states the honest pre-launch state
 - Pointer-responsive casting card with bounded tilt

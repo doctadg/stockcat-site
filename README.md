@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stockcat
 
-## Getting Started
+A nine-panel horizontal campaign site for **$STOCKCAT**: one cat, every job, with a public image library and a read-only Robinhood Chain portfolio terminal.
 
-First, run the development server:
+## What is live
+
+- Full horizontal wheel, touch, and keyboard navigation
+- Seven-file campaign image library with direct originals
+- Live Robinhood Stock Token market shelf using Blockscout data
+- Wallet lookup for native ETH and ERC-20 assets on Robinhood Chain (chain ID `4663`)
+- Stock Tokens surfaced first with explorer links and current Blockscout prices
+- Deterministic holder attribution for assets held by a configured buyback vault
+- Honest pre-launch state when the Stockcat token and vault do not exist yet
+
+The browser never requests a signature, wallet connection, private key, or transaction approval.
+
+## Portfolio APIs
+
+### `GET /api/market`
+
+Reads the six configured stock contracts from Robinhood Chain Blockscout. No sample prices or balances are substituted when the explorer is unavailable.
+
+### `GET /api/portfolio?address=0x…`
+
+Validates an EVM address, then reads:
+
+- native ETH balance;
+- all indexed ERC-20 balances;
+- known Robinhood Stock Tokens;
+- holder-attributed buyback vault balances when launch contracts are configured.
+
+The endpoint is read-only and returns `Cache-Control: no-store`.
+
+## Activating holder attribution
+
+Set these server-side environment variables after deploying and verifying the production contracts:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+STOCKCAT_TOKEN_ADDRESS=0x...
+STOCKCAT_BUYBACK_VAULT_ADDRESS=0x...
+STOCKCAT_EXCLUDED_ADDRESSES=0xLiquidityPool...,0xDeadAddress...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The vault is always excluded automatically. Additional comma-separated addresses should include every balance that is not entitled to vault assets, such as liquidity custody, locked protocol allocations, bridges, and burn addresses.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The displayed allocation is exact integer arithmetic:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+eligible supply = total supply − excluded balances
+wallet share    = wallet eligible balance ÷ eligible supply
+asset share     = vault asset balance × wallet eligible balance ÷ eligible supply
+```
 
-## Learn More
+No price estimate participates in the ownership calculation. Prices are presentation-only.
 
-To learn more about Next.js, take a look at the following resources:
+## Buyback execution boundary
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The site **reads** the resulting vault. It does not hold an executor key or submit stock purchases. The fee collector and buyback worker must remain a separate, authenticated service with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. per-cycle fee budgets;
+2. an idempotency key before every swap;
+3. quote expiry, slippage, and liquidity limits;
+4. an allowlist of verified Robinhood Stock Token contracts;
+5. on-chain receipt reconciliation before updating cycle state;
+6. a dedicated vault that cannot be confused with the executor wallet.
 
-## Deploy on Vercel
+Until those contracts and the executor are deployed, the interface shows `PENDING LAUNCH` rather than fabricated holdings.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+source ~/.nvm/nvm.sh && nvm use 22
+npm install
+npm test
+npm run lint
+npm run build
+npm run dev
+```
+
+## Canonical chain references
+
+- Robinhood Chain: `4663` (`0x1237`)
+- Explorer: <https://robinhoodchain.blockscout.com>
+- RPC: <https://rpc.mainnet.chain.robinhood.com>
