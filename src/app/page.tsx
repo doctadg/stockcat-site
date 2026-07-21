@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageLibraryPanel } from "@/components/ImageLibraryPanel";
 import { AssetBasketPanel } from "@/components/AssetBasketPanel";
+import { ActiveTradesPanel } from "@/components/ActiveTradesPanel";
 import { PortfolioPanel } from "@/components/PortfolioPanel";
 
 const heroImages = [
@@ -15,7 +16,7 @@ const heroImages = [
   { src: "/images/cat-04.webp", label: "ANATOMY MODEL", no: "300" },
 ] as const;
 
-const panelNames = ["THE FIRST STOCK CAT", "300 CATS", "WHAT HE TRADES", "HOLDER SHARE", "STILL FIRST"];
+const panelNames = ["THE FIRST STOCK CAT", "300 CATS", "WHAT HE TRADES", "ACTIVE TRADES", "HOLDER SHARE", "STILL FIRST"];
 
 function CropMarks() {
   return <span className="cropMarks" aria-hidden="true"><i /><i /><i /><i /></span>;
@@ -95,7 +96,7 @@ export default function Home() {
               <p className="heroSub">A cat that trades Stock Tokens<br />and shares the profit with holders.</p>
               <div className="heroActions">
                 <button className="button primary" onClick={() => goTo(1)}>SEE 300 CATS <ArrowIcon /></button>
-                <button className="button status" onClick={() => goTo(3)}>CHECK THE BOOKS <ArrowIcon /></button>
+                <button className="button status" onClick={() => goTo(4)}>CHECK THE BOOKS <ArrowIcon /></button>
               </div>
               <p className="micro">$STOCKCAT · CAT TRADES · HOLDERS SHARE · PRE-LAUNCH</p>
             </div>
@@ -122,11 +123,12 @@ export default function Home() {
 
           <section className={panelClass(1, "library")} id="library"><ImageLibraryPanel /></section>
           <section className={panelClass(2, "basket")} id="basket"><AssetBasketPanel /></section>
-          <section className={panelClass(3, "portfolio")} id="portfolio"><PortfolioPanel /></section>
+          <section className={panelClass(3, "trades")} id="trades"><ActiveTradesPanel /></section>
+          <section className={panelClass(4, "portfolio")} id="portfolio"><PortfolioPanel /></section>
 
-          <section className={panelClass(4, "finale")}>
+          <section className={panelClass(5, "finale")}>
             <div className="finalImage"><Image src="/images/cat-00.webp" alt="Stockcat at work" fill loading="eager" sizes="100vw" /><span className="giantWatermark">STOCKCAT</span><span className="finalScan" /></div>
-            <div className="finalCopy panelReveal"><span className="sectionIndex light">THE ORIGINAL STOCK CAT</span><h2>CAT TRADES.<br />HOLDERS SHARE.</h2><p>Three words: still the first Stockcat.</p><button onClick={() => goTo(3)} className="button finaleButton">CHECK YOUR SHARE <ArrowIcon /></button></div>
+            <div className="finalCopy panelReveal"><span className="sectionIndex light">THE ORIGINAL STOCK CAT</span><h2>CAT TRADES.<br />HOLDERS SHARE.</h2><p>Three words: still the first Stockcat.</p><button onClick={() => goTo(4)} className="button finaleButton">CHECK YOUR SHARE <ArrowIcon /></button></div>
             <footer><div>STOCKCAT · THE FIRST STOCK CAT.</div><a href="https://www.shutterstock.com/g/Iryna+Kuznetsova?sort=popular" target="_blank" rel="noreferrer">IMAGE SOURCE ↗</a></footer>
           </section>
         </div>

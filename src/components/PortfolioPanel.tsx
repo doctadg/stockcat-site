@@ -51,7 +51,7 @@ export function PortfolioPanel() {
   return (
     <>
       <div className="portfolioCopy panelReveal">
-        <span className="sectionIndex">04 / YOUR HOLDER SHARE</span>
+        <span className="sectionIndex">05 / YOUR HOLDER SHARE</span>
         <h2>YOUR SHARE.<br /><em>PUBLIC.</em></h2>
         <p>The cat trades. Profit enters the vault. Paste a wallet to see what that holder owns and the share attributed to it.</p>
         <form onSubmit={inspect} className="walletForm">

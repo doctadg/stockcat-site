@@ -25,7 +25,7 @@ Deadpan, overbooked, oddly professional. Internet-native rather than crypto-temp
 
 ## Motion
 
-The site is a single sideways contact sheet: five viewport-sized panels with native horizontal snap. Mouse wheel motion is translated to horizontal travel; touch uses direct swipe; keyboard arrows, Page Up/Down, Home, and End are supported. The 300-image archive is the only nested vertical scroll area. Panel changes use a finite darkroom-shutter wipe, blur-rise content staging, live progress, image-search swaps, scanning lines, crop marks, and contact-sheet parallax. No top bar, vertical page scroll, neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states and immediate snapping.
+The site is a single sideways contact sheet: six viewport-sized panels with native horizontal snap. Mouse wheel motion is translated to horizontal travel; touch uses direct swipe; keyboard arrows, Page Up/Down, Home, and End are supported. The 300-image archive is the only nested vertical scroll area. Panel changes use a finite darkroom-shutter wipe, blur-rise content staging, live progress, image-search swaps, scanning lines, crop marks, and contact-sheet parallax. No top bar, vertical page scroll, neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states and immediate snapping.
 
 ## Interaction model
 
@@ -33,6 +33,7 @@ The site is a single sideways contact sheet: five viewport-sized panels with nat
 - Image-search hero with a cycling Stockcat preview
 - 300-image Stockcat archive with lazy loading and source links
 - Live Robinhood Stock Token market shelf
+- Live Stock Token swap tape with explicit official/reference-wallet labeling
 - Read-only wallet X-ray and deterministic buyback-vault attribution
 - Honest pre-launch status throughout the trading and holder-share flow
 

@@ -1,12 +1,13 @@
 # Stockcat
 
-A five-panel horizontal campaign site for **$STOCKCAT**: the first Stockcat, built to trade Stock Tokens and share vault profit with holders.
+A six-panel horizontal campaign site for **$STOCKCAT**: the first Stockcat, built to trade Stock Tokens and share vault profit with holders.
 
 ## What is live
 
 - Full horizontal wheel, touch, and keyboard navigation
 - 300-image, vertically browsable Stockcat archive with credited source links
 - Live Robinhood Stock Token market shelf using Blockscout data
+- Live, read-only Stock Token swap tape backed by a verified public reference wallet; displayed USD notionals are estimates using the current Blockscout token rate, not historical execution prices
 - Wallet lookup for native ETH and ERC-20 assets on Robinhood Chain (chain ID `4663`)
 - Stock Tokens surfaced first with explorer links and current Blockscout prices
 - Deterministic holder attribution for assets held by a configured buyback vault
@@ -41,7 +42,10 @@ STOCKCAT_BUYBACK_VAULT_ADDRESS=0x...
 STOCKCAT_EXCLUDED_ADDRESSES=0xLiquidityPool...,0xDeadAddress...
 STOCKCAT_ATTRIBUTION_ENABLED=true
 STOCKCAT_TOKEN_SYMBOL=$STOCKCAT
+STOCKCAT_TRADER_ADDRESS=0x...
 ```
+
+`STOCKCAT_TRADER_ADDRESS` activates the official-wallet label on the trade tape. Without it, the site uses a high-activity public market-maker wallet as a transparent reference feed and explicitly states that Stockcat does not own or control it.
 
 The vault is always excluded automatically. Additional comma-separated addresses should include every balance that is not entitled to vault assets, such as liquidity custody, locked protocol allocations, bridges, and burn addresses.
 
