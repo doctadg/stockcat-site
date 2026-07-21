@@ -8,6 +8,7 @@ const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
 const serif = Instrument_Serif({ variable: "--font-serif", weight: "400", style: ["normal", "italic"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://stockcat-site.vercel.app"),
   title: "STOCKCAT — One cat. Every job.",
   description: "313 stock photos. One overworked tabby. $STOCKCAT is the most employed cat on the internet.",
   openGraph: {
