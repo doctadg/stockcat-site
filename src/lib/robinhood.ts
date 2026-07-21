@@ -14,6 +14,16 @@ export const STOCK_ASSETS = [
   { symbol: "AMZN", name: "AMAZON", address: "0x12f190a9F9d7D37a250758b26824B97CE941bF54", weight: 10, color: "#ff9900" },
 ] as const;
 
+export const TRADE_ASSETS = [
+  ...STOCK_ASSETS,
+  { symbol: "AMD", name: "AMD", address: "0x86923f96303D656E4aa86D9d42D1e57ad2023fdC" },
+  { symbol: "CRCL", name: "Circle Internet Group", address: "0xdF0992E440dD0be65BD8439b609d6D4366bf1CB5" },
+  { symbol: "MU", name: "Micron Technology", address: "0xfF080c8ce2E5feadaCa0Da81314Ae59D232d4afD" },
+  { symbol: "NFLX", name: "Netflix", address: "0xE0444EF8BF4eD74f74FD73686e2ddF4C1c5591E8" },
+  { symbol: "SNDK", name: "Sandisk Corporation", address: "0xB90A19fF0Af67f7779afF50A882A9CfF42446400" },
+  { symbol: "USO", name: "United States Oil Fund", address: "0xa30FA36Db767ad9eD3f7a60fC79526fB4d56D344" },
+] as const;
+
 export type StockAsset = (typeof STOCK_ASSETS)[number];
 
 export interface BlockscoutToken {

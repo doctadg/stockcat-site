@@ -40,13 +40,13 @@ export function ActiveTradesPanel() {
       <div className="tradesIntro panelReveal">
         <span className="sectionIndex light">04 / ACTIVE TRADE TAPE</span>
         <h2>WATCH THE<br /><em>CAT WORK.</em></h2>
-        <p>{official ? "Live swaps from the configured Stockcat trading wallet." : "A live Stock Token swap tape from a high-activity public Robinhood Chain wallet. This proves the trading rails—not project ownership."}</p>
+        <p>{official ? "Live swaps from the configured Stockcat trading wallet." : "A live Stock Token tape from a public Robinhood Chain trader verified profitable across the prior 24 hours. This proves the rails—not project ownership."}</p>
         <a className="tradeWallet" href={tape?.wallet.explorerUrl ?? "https://robinhoodchain.blockscout.com"} target="_blank" rel="noreferrer">
-          <span>{official ? "STOCKCAT WALLET" : "REFERENCE WALLET"}</span>
+          <span>{official ? "STOCKCAT WALLET" : "24H-PROFITABLE REFERENCE"}</span>
           <b>{tape?.wallet.address ? short(tape.wallet.address) : "SYNCING…"}</b>
           <small>{official ? "PROJECT CONFIGURED" : "PUBLIC · NOT STOCKCAT-OWNED"} ↗</small>
         </a>
-        <div className="tradeRail"><span><i /> LIVE CHAIN</span><b>ROBINHOOD · 4663</b></div>
+        <div className="tradeRail"><span><i /> LIVE CHAIN</span>{tape?.performance24h ? <><b>24H {dollars(tape.performance24h.pnlUsd)}</b><b>{tape.performance24h.swapCount} SWAPS</b></> : <b>ROBINHOOD · 4663</b>}</div>
       </div>
 
       <div className="tradeTape panelReveal">

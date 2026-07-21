@@ -125,6 +125,7 @@ export type TradeTapePayload = {
   status: "available" | "empty";
   wallet: { address: string; mode: "official" | "reference"; label: string; explorerUrl: string };
   trades: Array<ActiveTrade & { explorerUrl: string }>;
+  performance24h: null | { status: "profitable"; pnlUsd: number; roiPct: number; swapCount: number; notionalUsd: number; verifiedAt: string; methodology: string };
   observedAt: string;
   disclaimer: string;
 };
@@ -132,11 +133,13 @@ export type TradeTapePayload = {
 export function parseTradeTapePayload(input: unknown): TradeTapePayload {
   const payload = record(input);
   const wallet = record(payload?.wallet);
+  const performance = payload?.performance24h === null ? null : record(payload?.performance24h);
   if (!payload || (payload.status !== "available" && payload.status !== "empty") || !wallet || typeof wallet.address !== "string" || !isEvmAddress(wallet.address) || (wallet.mode !== "official" && wallet.mode !== "reference") || typeof wallet.label !== "string" || wallet.label.length > 80 || typeof wallet.explorerUrl !== "string" || !wallet.explorerUrl.startsWith("https://") || !Array.isArray(payload.trades) || payload.trades.length > 10 || typeof payload.observedAt !== "string" || !Number.isFinite(Date.parse(payload.observedAt)) || typeof payload.disclaimer !== "string" || payload.disclaimer.length > 240) throw new Error("Invalid trade tape");
+  if (performance !== null && (performance?.status !== "profitable" || typeof performance.pnlUsd !== "number" || performance.pnlUsd <= 0 || !Number.isFinite(performance.pnlUsd) || typeof performance.roiPct !== "number" || performance.roiPct <= 0 || !Number.isFinite(performance.roiPct) || !Number.isSafeInteger(performance.swapCount) || (performance.swapCount as number) < 1 || typeof performance.notionalUsd !== "number" || performance.notionalUsd <= 0 || !Number.isFinite(performance.notionalUsd) || typeof performance.verifiedAt !== "string" || !Number.isFinite(Date.parse(performance.verifiedAt)) || typeof performance.methodology !== "string" || performance.methodology.length > 240)) throw new Error("Invalid trade tape");
   const trades = payload.trades.map((candidate) => {
     const trade = record(candidate);
     if (!trade || typeof trade.symbol !== "string" || trade.symbol.length > 20 || typeof trade.name !== "string" || trade.name.length > 80 || (trade.side !== "BUY" && trade.side !== "SELL") || typeof trade.amount !== "string" || !/^\d+(?:\.\d+)?$/.test(trade.amount) || (trade.priceUsd !== null && (typeof trade.priceUsd !== "number" || !Number.isFinite(trade.priceUsd) || trade.priceUsd < 0)) || (trade.estimatedValueUsd !== null && (typeof trade.estimatedValueUsd !== "number" || !Number.isFinite(trade.estimatedValueUsd) || trade.estimatedValueUsd < 0)) || typeof trade.timestamp !== "string" || !Number.isFinite(Date.parse(trade.timestamp)) || typeof trade.txHash !== "string" || !HASH.test(trade.txHash) || !Number.isSafeInteger(trade.logIndex) || (trade.logIndex as number) < 0 || typeof trade.explorerUrl !== "string" || !trade.explorerUrl.startsWith("https://")) throw new Error("Invalid trade tape");
     return trade as ActiveTrade & { explorerUrl: string };
   });
-  return { status: payload.status, wallet: wallet as TradeTapePayload["wallet"], trades, observedAt: payload.observedAt, disclaimer: payload.disclaimer };
+  return { status: payload.status, wallet: wallet as TradeTapePayload["wallet"], trades, performance24h: performance as TradeTapePayload["performance24h"], observedAt: payload.observedAt, disclaimer: payload.disclaimer };
 }

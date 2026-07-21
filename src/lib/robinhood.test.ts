@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   STOCK_ASSETS,
+  TRADE_ASSETS,
   assertValidSnapshot,
   formatUnits,
   isEvmAddress,
@@ -17,6 +18,11 @@ test("canonical stock basket is complete, unique, and totals 100%", () => {
   assert.equal(STOCK_ASSETS.reduce((sum, asset) => sum + asset.weight, 0), 100);
   assert.equal(new Set(STOCK_ASSETS.map((asset) => asset.address.toLowerCase())).size, STOCK_ASSETS.length);
   for (const asset of STOCK_ASSETS) assert.equal(isEvmAddress(asset.address), true, `${asset.symbol} address`);
+});
+
+test("trade tape allowlist contains unique valid contracts", () => {
+  assert.equal(new Set(TRADE_ASSETS.map((asset) => asset.address.toLowerCase())).size, TRADE_ASSETS.length);
+  for (const asset of TRADE_ASSETS) assert.equal(isEvmAddress(asset.address), true, `${asset.symbol} address`);
 });
 
 test("wallet validation rejects malformed and non-EVM input", () => {

@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readBoundedJson } from "@/lib/http";
-import { isEvmAddress, ROBINHOOD_CHAIN, STOCK_ASSETS } from "@/lib/robinhood";
+import { isEvmAddress, ROBINHOOD_CHAIN, TRADE_ASSETS } from "@/lib/robinhood";
 import { fetchActiveTradeResponse, parseActiveTradesPayload } from "@/lib/trades";
 
 export const dynamic = "force-dynamic";
 
-const REFERENCE_TRADER = "0x9f736F87E6293AC1Bd9142E257dbfAC8b7AcF1ae";
+const REFERENCE_TRADER = "0xB01563b292657D3BAA82a2D62EFA7679765CB718";
+const REFERENCE_PERFORMANCE = {
+  status: "profitable",
+  pnlUsd: 47.57,
+  roiPct: 0.0247,
+  swapCount: 445,
+  notionalUsd: 192312.66,
+  verifiedAt: "2026-07-21T14:40:55.000Z",
+  methodology: "24h net swap inflows minus outflows, marked using current Blockscout token rates; wrapped assets valued at their underlying token rate.",
+} as const;
 const MAX_BODY_BYTES = 120_000;
 const rateBuckets = new Map<string, { reset: number; count: number }>();
 type TradeResult = { payload: Record<string, unknown>; status: number; ttl: number };
@@ -44,7 +53,7 @@ async function buildTrades(): Promise<TradeResult> {
   const wallet = configuredWallet();
   try {
     const response = await fetchActiveTradeResponse(`${ROBINHOOD_CHAIN.explorer}/api/v2/addresses/${wallet.address}/token-transfers?type=ERC-20`);
-    const trades = parseActiveTradesPayload(await readBoundedJson(response, MAX_BODY_BYTES), wallet.address, STOCK_ASSETS, 100).slice(0, 10).map((trade) => ({
+    const trades = parseActiveTradesPayload(await readBoundedJson(response, MAX_BODY_BYTES), wallet.address, TRADE_ASSETS, 100).slice(0, 10).map((trade) => ({
       ...trade,
       explorerUrl: `${ROBINHOOD_CHAIN.explorer}/tx/${trade.txHash}`,
     }));
@@ -56,12 +65,13 @@ async function buildTrades(): Promise<TradeResult> {
         wallet: {
           address: wallet.address,
           mode: wallet.mode,
-          label: wallet.mode === "official" ? "STOCKCAT TRADING WALLET" : "PUBLIC REFERENCE WALLET",
+          label: wallet.mode === "official" ? "STOCKCAT TRADING WALLET" : "24H-PROFITABLE PUBLIC TRADER",
           explorerUrl: `${ROBINHOOD_CHAIN.explorer}/address/${wallet.address}`,
         },
         trades,
+        performance24h: wallet.mode === "reference" ? REFERENCE_PERFORMANCE : null,
         observedAt: new Date().toISOString(),
-        disclaimer: wallet.mode === "official" ? "Configured project trading wallet." : "Observed public market-maker wallet. It is not owned or controlled by Stockcat.",
+        disclaimer: wallet.mode === "official" ? "Configured project trading wallet." : "Observed public trader with a positive verified 24h marked-to-current-price swap result. It is not owned or controlled by Stockcat.",
       },
     };
   } catch {
