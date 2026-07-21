@@ -25,7 +25,7 @@ Deadpan, overbooked, oddly professional. Internet-native rather than crypto-temp
 
 ## Motion
 
-Physical and finite: contact-sheet slides, image swaps, crop-mark pulses, ticker movement, slight card tilt. No neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states.
+The site is a single sideways contact sheet: six viewport-sized panels with native horizontal snap. Mouse wheel motion is translated to horizontal travel; touch uses direct swipe; keyboard arrows, Page Up/Down, Home, and End are supported. Panel changes use a finite darkroom-shutter wipe, blur-rise content staging, live progress, and image-search swaps. Physical secondary motion includes scanning lines, flash exposure, crop-mark pulses, contact-sheet parallax, casting-card tilt, and a booking-confetti burst. No vertical page scroll, neon glows, floating particles, or generic crypto orbs. Reduced-motion users get static final states and immediate snapping.
 
 ## Interaction model
 
