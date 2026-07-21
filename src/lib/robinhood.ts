@@ -35,12 +35,91 @@ export interface BlockscoutBalance {
   token_id?: string | null;
 }
 
+const NON_NEGATIVE_INTEGER = /^\d{1,96}$/;
+
+function record(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
+}
+
+function boundedText(value: unknown, max = 80): string | null {
+  return typeof value === "string" && value.length > 0 && value.length <= max ? value : null;
+}
+
+function finiteRate(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string" || value.length > 48) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? value : null;
+}
+
+export function safeProduct(left: number | null, right: number | null): number | null {
+  if (left === null || right === null) return null;
+  const product = left * right;
+  return Number.isFinite(product) && product >= 0 ? product : null;
+}
+
 export function isEvmAddress(value: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(value.trim());
 }
 
+export function parseTokenBalanceRows(input: unknown, maxRows = 200): BlockscoutBalance[] {
+  if (!Array.isArray(input)) throw new Error("Invalid token balance response");
+  if (input.length > maxRows) throw new Error("Too many token balance rows");
+  const unique = new Map<string, BlockscoutBalance>();
+  for (const candidate of input) {
+    const row = record(candidate);
+    const token = record(row?.token);
+    const address = boundedText(token?.address_hash, 42);
+    const decimalsText = token?.decimals;
+    const decimals = typeof decimalsText === "string" && /^\d{1,2}$/.test(decimalsText) ? Number(decimalsText) : NaN;
+    const value = row?.value;
+    const name = boundedText(token?.name);
+    const symbol = boundedText(token?.symbol);
+    if (!address || !isEvmAddress(address) || token?.type !== "ERC-20" || !Number.isInteger(decimals) || decimals < 0 || decimals > 36 || !name || !symbol || typeof value !== "string" || !NON_NEGATIVE_INTEGER.test(value)) continue;
+    const totalSupply = token?.total_supply;
+    if (totalSupply !== null && totalSupply !== undefined && (typeof totalSupply !== "string" || !NON_NEGATIVE_INTEGER.test(totalSupply))) continue;
+    const icon = token?.icon_url;
+    const parsed: BlockscoutBalance = {
+      value,
+      token: {
+        address_hash: address,
+        decimals: String(decimals),
+        exchange_rate: finiteRate(token?.exchange_rate),
+        icon_url: typeof icon === "string" && icon.length <= 500 && /^https:\/\//i.test(icon) ? icon : null,
+        name,
+        symbol,
+        total_supply: typeof totalSupply === "string" ? totalSupply : null,
+        type: "ERC-20",
+        volume_24h: finiteRate(token?.volume_24h),
+        holders_count: typeof token?.holders_count === "string" && NON_NEGATIVE_INTEGER.test(token.holders_count) ? token.holders_count : null,
+      },
+    };
+    const key = address.toLowerCase();
+    if (!unique.has(key)) unique.set(key, parsed);
+  }
+  return [...unique.values()];
+}
+
+export function normalizeExcludedAddresses(addresses: string[], max = 20): string[] {
+  const unique = new Set<string>();
+  for (const address of addresses) {
+    const normalized = address.trim().toLowerCase();
+    if (!isEvmAddress(normalized)) throw new Error("Invalid excluded address");
+    unique.add(normalized);
+  }
+  if (unique.size > max) throw new Error("Too many excluded addresses");
+  return [...unique];
+}
+
+export function assertValidSnapshot(totalSupply: bigint, excludedBalance: bigint, walletBalance: bigint): void {
+  if (totalSupply <= 0n) throw new Error("Total supply must be positive");
+  if (excludedBalance < 0n || excludedBalance >= totalSupply) throw new Error("Excluded balance must be below total supply");
+  const eligibleSupply = totalSupply - excludedBalance;
+  if (walletBalance < 0n || walletBalance > eligibleSupply) throw new Error("Wallet balance exceeds eligible supply");
+}
+
 export function formatUnits(raw: string | bigint, decimals: number, maxFraction = 4): string {
-  const safeDecimals = Number.isInteger(decimals) ? Math.min(255, Math.max(0, decimals)) : 18;
+  const safeDecimals = Number.isInteger(decimals) ? Math.min(36, Math.max(0, decimals)) : 18;
   const value = typeof raw === "bigint" ? raw : BigInt(raw || "0");
   const negative = value < 0n;
   const absolute = negative ? -value : value;
@@ -58,6 +137,7 @@ export function proRataAllocation(vaultBalance: string | bigint, walletBalance: 
   const wallet = BigInt(walletBalance);
   const supply = BigInt(eligibleSupply);
   if (vault <= 0n || wallet <= 0n || supply <= 0n) return 0n;
+  if (wallet > supply) throw new Error("Wallet balance exceeds eligible supply");
   return (vault * wallet) / supply;
 }
 
@@ -65,6 +145,7 @@ export function sharePercent(walletBalance: string | bigint, eligibleSupply: str
   const wallet = BigInt(walletBalance);
   const supply = BigInt(eligibleSupply);
   if (wallet <= 0n || supply <= 0n) return 0;
+  if (wallet > supply) throw new Error("Wallet balance exceeds eligible supply");
   const partsPerBillion = (wallet * 1_000_000_000n) / supply;
   return Number(partsPerBillion) / 10_000_000;
 }

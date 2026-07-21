@@ -238,9 +238,9 @@ export default function Home() {
             <div className="listingTop panelReveal"><span className="sectionIndex">07 / THE LISTING</span><span>THIS IS NOT FINANCIAL ADVICE. IT IS A CAT.</span></div>
             <div className="listingTitle panelReveal"><h2>THE WORLD’S<br />FIRST <em>STOCK</em> CAT.</h2><div className="tickerCard"><span>TICKER</span><b>$STOCKCAT</b><small>STATUS · NOT YET TRADING</small><i /></div></div>
             <div className="facts panelReveal">
-              <div><span>01</span><b>THE FEES</b><p>A configured share funds verified Robinhood Stock Token purchases.</p></div>
-              <div><span>02</span><b>THE VAULT</b><p>Dedicated, public and readable directly from Robinhood Chain.</p></div>
-              <div><span>03</span><b>YOUR SHARE</b><p>Wallet balance ÷ eligible supply × every asset held by the vault.</p></div>
+              <div><span>01</span><b>THE PLAN</b><p>A future executor can route configured fees into allowlisted Stock Tokens.</p></div>
+              <div><span>02</span><b>THE VAULT</b><p>Not deployed yet. When enabled, balances stay public on Robinhood Chain.</p></div>
+              <div><span>03</span><b>ATTRIBUTION</b><p>One-block wallet balance ÷ eligible supply × allowlisted vault assets.</p></div>
             </div>
             <div className="listingTape">NOT A SECURITY · BARELY AN EMPLOYEE · NOT A SECURITY · BARELY AN EMPLOYEE ·</div>
           </section>

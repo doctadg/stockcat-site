@@ -29,7 +29,7 @@ Validates an EVM address, then reads:
 - known Robinhood Stock Tokens;
 - holder-attributed buyback vault balances when launch contracts are configured.
 
-The endpoint is read-only and returns `Cache-Control: no-store`.
+The endpoint is read-only, rate-limited per runtime instance, coalesces identical in-flight reads, and keeps a 15-second private server cache. Blockscout payloads are size-bounded and runtime-validated before use.
 
 ## Activating holder attribution
 
@@ -39,11 +39,13 @@ Set these server-side environment variables after deploying and verifying the pr
 STOCKCAT_TOKEN_ADDRESS=0x...
 STOCKCAT_BUYBACK_VAULT_ADDRESS=0x...
 STOCKCAT_EXCLUDED_ADDRESSES=0xLiquidityPool...,0xDeadAddress...
+STOCKCAT_ATTRIBUTION_ENABLED=true
+STOCKCAT_TOKEN_SYMBOL=$STOCKCAT
 ```
 
 The vault is always excluded automatically. Additional comma-separated addresses should include every balance that is not entitled to vault assets, such as liquidity custody, locked protocol allocations, bridges, and burn addresses.
 
-The displayed allocation is exact integer arithmetic:
+Attribution remains disabled unless the explicit enable flag is set. When enabled, supply, holder balances, exclusions, and allowlisted vault assets are read from RPC at one pinned block. Impossible snapshots fail closed. The displayed allocation uses exact integer arithmetic:
 
 ```text
 eligible supply = total supply − excluded balances

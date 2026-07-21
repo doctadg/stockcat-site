@@ -10,7 +10,7 @@ type Portfolio = {
   nativeBalance: { amount: string; valueUsd: number | null };
   walletAssets: Asset[];
   stockAssets: Asset[];
-  buyback: { status: "live" | "awaiting-deployment"; reason?: string; holderShare: null | { tokenSymbol: string; walletBalance: string; eligibleSupply: string; sharePercent: number; allocations: Allocation[]; vaultAddress: string; methodology: string } };
+  buyback: { status: "attribution-live" | "unconfigured" | "misconfigured" | "unavailable"; reason?: string; holderShare: null | { tokenSymbol: string; walletBalance: string; eligibleSupply: string; sharePercent: number; allocations: Allocation[]; vaultAddress: string; methodology: string; blockNumber: number } };
   observedAt: string;
 };
 
@@ -44,7 +44,8 @@ export function PortfolioPanel() {
     ...(portfolio?.stockAssets ?? []),
     ...(portfolio?.walletAssets.filter((asset) => !stockAddresses.has(asset.address.toLowerCase())) ?? []),
   ].slice(0, 6);
-  const share = portfolio?.buyback.holderShare;
+  const candidateShare = portfolio?.buyback.holderShare;
+  const share = candidateShare && Number.isFinite(candidateShare.sharePercent) && candidateShare.sharePercent >= 0 && candidateShare.sharePercent <= 100 ? candidateShare : null;
 
   return (
     <>
@@ -69,11 +70,11 @@ export function PortfolioPanel() {
             {visibleAssets.length ? visibleAssets.map((asset) => <a href={asset.explorerUrl} target="_blank" rel="noreferrer" key={asset.address}><b>{asset.symbol}</b><span>{asset.amount}</span><strong>{usd(asset.valueUsd)}</strong></a>) : <div className="noAssets">NO ERC-20 ASSETS FOUND</div>}
           </div>
           <div className={`vaultShare ${share ? "live" : "pending"}`}>
-            <div><span>YOUR BUYBACK VAULT SHARE</span><b>{share ? `${share.sharePercent.toFixed(6)}%` : "PENDING LAUNCH"}</b></div>
-            {share ? <div className="allocationRows">{share.allocations.slice(0, 3).map((asset) => <a href={asset.explorerUrl} target="_blank" rel="noreferrer" key={asset.address}><b>{asset.symbol}</b><span>{asset.amount}</span><strong>{usd(asset.valueUsd)}</strong></a>)}</div> : <p>$STOCKCAT and its dedicated vault are not deployed yet. This activates from verified contracts—never sample balances.</p>}
+            <div><span>YOUR ATTRIBUTED VAULT SHARE</span><b>{share ? `${share.sharePercent.toFixed(6)}%` : portfolio.buyback.status === "unavailable" ? "SNAPSHOT UNAVAILABLE" : portfolio.buyback.status === "misconfigured" ? "CONFIG ERROR" : "PENDING LAUNCH"}</b></div>
+            {share ? <div className="allocationRows">{share.allocations.slice(0, 3).map((asset) => <a href={asset.explorerUrl} target="_blank" rel="noreferrer" key={asset.address}><b>{asset.symbol}</b><span>{asset.amount}</span><strong>{usd(asset.valueUsd)}</strong></a>)}</div> : <p>{portfolio.buyback.reason ?? "On-chain attribution is not available."}</p>}
           </div>
         </>}
-        <div className="terminalFoot"><span>NO WALLET CONNECTION</span><span>NO SAMPLE DATA</span><span>EXPLORER VERIFIED</span></div>
+        <div className="terminalFoot"><span>NO WALLET CONNECTION</span><span>NO SAMPLE DATA</span><span>{portfolio ? "LIVE EXPLORER READ" : "AWAITING READ"}</span></div>
       </div>
     </>
   );
