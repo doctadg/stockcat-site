@@ -33,10 +33,10 @@ export function AssetBasketPanel() {
   return (
     <>
       <div className="basketIntro panelReveal">
-        <span className="sectionIndex light">04 / THE STOCK SHELF</span>
-        <h2>FEES AIM<br /><em>AT THE REAL WORLD.</em></h2>
-        <p>The planned basket uses verified Robinhood Stock Token contracts. Once the coin and vault launch, fee-funded execution can acquire these assets through live on-chain markets.</p>
-        <div className="mechanicFlow"><span><b>01</b> PLANNED FEES</span><i>→</i><span><b>02</b> EXECUTOR</span><i>→</i><span><b>03</b> VAULT ATTRIBUTION</span></div>
+        <span className="sectionIndex light">03 / WHAT THE CAT TRADES</span>
+        <h2>THE CAT<br /><em>TRADES THESE.</em></h2>
+        <p>Stockcat trades a public basket of Robinhood Stock Tokens. Trading profit goes to the vault. Holders share the vault by how much $STOCKCAT they own.</p>
+        <div className="mechanicFlow"><span><b>01</b> CAT TRADES</span><i>→</i><span><b>02</b> PROFIT TO VAULT</span><i>→</i><span><b>03</b> HOLDERS SHARE</span></div>
       </div>
       <div className="assetShelf panelReveal">
         {STOCK_ASSETS.map((asset) => {
@@ -51,7 +51,7 @@ export function AssetBasketPanel() {
           </a>;
         })}
       </div>
-      <div className="basketTruth panelReveal"><b>{dependency === "available" ? "LIVE REFERENCES · CHAIN 4663" : dependency === "partial" ? "PARTIAL EXPLORER DATA" : dependency === "unavailable" ? "EXPLORER UNAVAILABLE" : "CHECKING CHAIN 4663"}</b><span>Basket weights are launch configuration—not current holdings. Stock Tokens provide economic exposure; they are not direct shares in the underlying companies.</span></div>
+      <div className="basketTruth panelReveal"><b>{dependency === "available" ? "LIVE REFERENCES · CHAIN 4663" : dependency === "partial" ? "PARTIAL EXPLORER DATA" : dependency === "unavailable" ? "EXPLORER UNAVAILABLE" : "CHECKING CHAIN 4663"}</b><span>Pre-launch target basket—not current holdings. Activation requires the live token, vault, and executor.</span></div>
     </>
   );
 }

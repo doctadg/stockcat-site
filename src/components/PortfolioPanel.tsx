@@ -51,9 +51,9 @@ export function PortfolioPanel() {
   return (
     <>
       <div className="portfolioCopy panelReveal">
-        <span className="sectionIndex">05 / WALLET X-RAY</span>
-        <h2>PASTE IT.<br /><em>SEE THE BOOKS.</em></h2>
-        <p>Read any wallet on Robinhood Chain. No connect button. No signature. No custody.</p>
+        <span className="sectionIndex">04 / YOUR HOLDER SHARE</span>
+        <h2>YOUR SHARE.<br /><em>PUBLIC.</em></h2>
+        <p>The cat trades. Profit enters the vault. Paste a wallet to see what that holder owns and the share attributed to it.</p>
         <form onSubmit={inspect} className="walletForm">
           <label htmlFor="wallet-address">ROBINHOOD CHAIN ADDRESS</label>
           <div><input id="wallet-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="0x…" autoComplete="off" spellCheck={false} /><button disabled={loading}>{loading ? "READING…" : "INSPECT →"}</button></div>

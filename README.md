@@ -1,11 +1,11 @@
 # Stockcat
 
-A nine-panel horizontal campaign site for **$STOCKCAT**: one cat, every job, with a public image library and a read-only Robinhood Chain portfolio terminal.
+A five-panel horizontal campaign site for **$STOCKCAT**: the first Stockcat, built to trade Stock Tokens and share vault profit with holders.
 
 ## What is live
 
 - Full horizontal wheel, touch, and keyboard navigation
-- Seven-file campaign image library with direct originals
+- 300-image, vertically browsable Stockcat archive with credited source links
 - Live Robinhood Stock Token market shelf using Blockscout data
 - Wallet lookup for native ETH and ERC-20 assets on Robinhood Chain (chain ID `4663`)
 - Stock Tokens surfaced first with explorer links and current Blockscout prices
