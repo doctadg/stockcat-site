@@ -73,6 +73,9 @@ test("Blockscout token rows are bounded, validated, and deduplicated", () => {
   const ignored = parseTokenBalancePayload([{ ...row, token: { ...row.token, type: "ERC-721" } }]);
   assert.equal(ignored.rows.length, 0);
   assert.equal(ignored.rejected, 0);
+  const malformed = parseTokenBalancePayload([{}, { token: { type: "UNKNOWN" } }]);
+  assert.equal(malformed.rows.length, 0);
+  assert.equal(malformed.rejected, 2);
 });
 
 test("allocations never exceed their vault balance", () => {

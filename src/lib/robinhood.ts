@@ -76,7 +76,12 @@ export function parseTokenBalancePayload(input: unknown, maxRows = 200): { rows:
     const value = row?.value;
     const name = boundedText(token?.name);
     const symbol = boundedText(token?.symbol);
-    if (token?.type !== "ERC-20") continue;
+    const tokenType = token?.type;
+    if (tokenType !== "ERC-20") {
+      if (tokenType === "ERC-721" || tokenType === "ERC-1155" || tokenType === "ERC-404") continue;
+      rejected += 1;
+      continue;
+    }
     if (!address || !isEvmAddress(address) || !Number.isInteger(decimals) || decimals < 0 || decimals > 36 || !name || !symbol || typeof value !== "string" || !NON_NEGATIVE_INTEGER.test(value)) { rejected += 1; continue; }
     const totalSupply = token?.total_supply;
     if (totalSupply !== null && totalSupply !== undefined && (typeof totalSupply !== "string" || !NON_NEGATIVE_INTEGER.test(totalSupply))) { rejected += 1; continue; }
