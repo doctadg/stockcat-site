@@ -10,6 +10,7 @@ type Portfolio = {
   nativeBalance: { amount: string; valueUsd: number | null };
   walletAssets: Asset[];
   stockAssets: Asset[];
+  dataQuality: "complete" | "partial";
   buyback: { status: "attribution-live" | "unconfigured" | "misconfigured" | "unavailable"; reason?: string; holderShare: null | { tokenSymbol: string; walletBalance: string; eligibleSupply: string; sharePercent: number; allocations: Allocation[]; vaultAddress: string; methodology: string; blockNumber: number } };
   observedAt: string;
 };
@@ -74,7 +75,7 @@ export function PortfolioPanel() {
             {share ? <div className="allocationRows">{share.allocations.slice(0, 3).map((asset) => <a href={asset.explorerUrl} target="_blank" rel="noreferrer" key={asset.address}><b>{asset.symbol}</b><span>{asset.amount}</span><strong>{usd(asset.valueUsd)}</strong></a>)}</div> : <p>{portfolio.buyback.reason ?? "On-chain attribution is not available."}</p>}
           </div>
         </>}
-        <div className="terminalFoot"><span>NO WALLET CONNECTION</span><span>NO SAMPLE DATA</span><span>{portfolio ? "LIVE EXPLORER READ" : "AWAITING READ"}</span></div>
+        <div className="terminalFoot"><span>NO WALLET CONNECTION</span><span>NO SAMPLE DATA</span><span>{portfolio ? portfolio.dataQuality === "partial" ? "PARTIAL EXPLORER READ" : "LIVE EXPLORER READ" : "AWAITING READ"}</span></div>
       </div>
     </>
   );

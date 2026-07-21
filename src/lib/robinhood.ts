@@ -62,10 +62,11 @@ export function isEvmAddress(value: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(value.trim());
 }
 
-export function parseTokenBalanceRows(input: unknown, maxRows = 200): BlockscoutBalance[] {
+export function parseTokenBalancePayload(input: unknown, maxRows = 200): { rows: BlockscoutBalance[]; rejected: number; inputCount: number } {
   if (!Array.isArray(input)) throw new Error("Invalid token balance response");
   if (input.length > maxRows) throw new Error("Too many token balance rows");
   const unique = new Map<string, BlockscoutBalance>();
+  let rejected = 0;
   for (const candidate of input) {
     const row = record(candidate);
     const token = record(row?.token);
@@ -75,9 +76,10 @@ export function parseTokenBalanceRows(input: unknown, maxRows = 200): Blockscout
     const value = row?.value;
     const name = boundedText(token?.name);
     const symbol = boundedText(token?.symbol);
-    if (!address || !isEvmAddress(address) || token?.type !== "ERC-20" || !Number.isInteger(decimals) || decimals < 0 || decimals > 36 || !name || !symbol || typeof value !== "string" || !NON_NEGATIVE_INTEGER.test(value)) continue;
+    if (token?.type !== "ERC-20") continue;
+    if (!address || !isEvmAddress(address) || !Number.isInteger(decimals) || decimals < 0 || decimals > 36 || !name || !symbol || typeof value !== "string" || !NON_NEGATIVE_INTEGER.test(value)) { rejected += 1; continue; }
     const totalSupply = token?.total_supply;
-    if (totalSupply !== null && totalSupply !== undefined && (typeof totalSupply !== "string" || !NON_NEGATIVE_INTEGER.test(totalSupply))) continue;
+    if (totalSupply !== null && totalSupply !== undefined && (typeof totalSupply !== "string" || !NON_NEGATIVE_INTEGER.test(totalSupply))) { rejected += 1; continue; }
     const icon = token?.icon_url;
     const parsed: BlockscoutBalance = {
       value,
@@ -97,7 +99,11 @@ export function parseTokenBalanceRows(input: unknown, maxRows = 200): Blockscout
     const key = address.toLowerCase();
     if (!unique.has(key)) unique.set(key, parsed);
   }
-  return [...unique.values()];
+  return { rows: [...unique.values()], rejected, inputCount: input.length };
+}
+
+export function parseTokenBalanceRows(input: unknown, maxRows = 200): BlockscoutBalance[] {
+  return parseTokenBalancePayload(input, maxRows).rows;
 }
 
 export function normalizeExcludedAddresses(addresses: string[], max = 20): string[] {

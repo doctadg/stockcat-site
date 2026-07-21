@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readBoundedJson } from "@/lib/http";
 import {
   ROBINHOOD_CHAIN,
   STOCK_ASSETS,
   formatUnits,
   isEvmAddress,
   normalizeExcludedAddresses,
-  parseTokenBalanceRows,
+  parseTokenBalancePayload,
   safeProduct,
   type BlockscoutBalance,
 } from "@/lib/robinhood";
@@ -61,11 +62,7 @@ async function explorerJson(path: string): Promise<unknown> {
         signal: AbortSignal.timeout(8_000),
       });
       if (!response.ok) throw new Error(`Explorer HTTP ${response.status}`);
-      const declared = Number(response.headers.get("content-length") ?? "0");
-      if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) throw new Error("Explorer response too large");
-      const text = await response.text();
-      if (text.length > MAX_BODY_BYTES) throw new Error("Explorer response too large");
-      return JSON.parse(text);
+      return await readBoundedJson(response, MAX_BODY_BYTES);
     } catch (error) {
       lastError = error;
       if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
@@ -74,8 +71,10 @@ async function explorerJson(path: string): Promise<unknown> {
   throw lastError instanceof Error ? lastError : new Error("Explorer unavailable");
 }
 
-async function balances(address: string): Promise<BlockscoutBalance[]> {
-  return parseTokenBalanceRows(await explorerJson(`/api/v2/addresses/${address}/token-balances`));
+async function balances(address: string) {
+  const parsed = parseTokenBalancePayload(await explorerJson(`/api/v2/addresses/${address}/token-balances`));
+  if (parsed.inputCount > 0 && parsed.rows.length === 0 && parsed.rejected > 0) throw new Error("All token balance rows were invalid");
+  return parsed;
 }
 
 function parseAccount(input: unknown) {
@@ -109,11 +108,12 @@ function publicAsset(row: BlockscoutBalance) {
 }
 
 async function buildPortfolio(address: string): Promise<PortfolioPayload> {
-  const [walletRows, accountRaw] = await Promise.all([
+  const [walletPayload, accountRaw] = await Promise.all([
     balances(address),
     explorerJson(`/api/v2/addresses/${address}`),
   ]);
   const account = parseAccount(accountRaw);
+  const walletRows = walletPayload.rows;
   const allWalletAssets = walletRows
     .filter((row) => BigInt(row.value) > 0n)
     .map(publicAsset)
@@ -156,6 +156,7 @@ async function buildPortfolio(address: string): Promise<PortfolioPayload> {
     nativeBalance: { symbol: "ETH", amount: eth, valueUsd: safeProduct(Number(eth), account.exchangeRate) },
     walletAssets: allWalletAssets.slice(0, 100),
     stockAssets,
+    dataQuality: walletPayload.rejected > 0 ? "partial" : "complete",
     buyback,
     observedAt: new Date().toISOString(),
   };

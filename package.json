@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types src/lib/robinhood.test.ts"
+    "test": "node --test --experimental-strip-types src/lib/*.test.ts"
   },
   "dependencies": {
     "next": "16.2.10",

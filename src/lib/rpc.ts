@@ -1,4 +1,5 @@
 import { ROBINHOOD_CHAIN, STOCK_ASSETS, assertValidSnapshot, formatUnits, proRataAllocation, sharePercent } from "./robinhood";
+import { readBoundedJson } from "./http";
 
 const UINT_HEX = /^0x[0-9a-fA-F]{1,64}$/;
 const BALANCE_OF = "70a08231";
@@ -28,9 +29,7 @@ async function rpc(method: string, params: unknown[]): Promise<unknown> {
         cache: "no-store",
       });
       if (!response.ok) throw new Error(`RPC HTTP ${response.status}`);
-      const text = await response.text();
-      if (text.length > 32_768) throw new Error("RPC response too large");
-      const payload = JSON.parse(text) as RpcReply;
+      const payload = await readBoundedJson(response, 32_768) as RpcReply;
       if (payload.error || payload.result === undefined) throw new Error("RPC call failed");
       return payload.result;
     } catch (error) {
@@ -54,9 +53,7 @@ async function rpcBatch(calls: { to: string; data: string }[], blockTag: string)
         cache: "no-store",
       });
       if (!response.ok) throw new Error(`RPC HTTP ${response.status}`);
-      const text = await response.text();
-      if (text.length > 131_072) throw new Error("RPC batch response too large");
-      const replies = JSON.parse(text) as RpcReply[];
+      const replies = await readBoundedJson(response, 131_072) as RpcReply[];
       if (!Array.isArray(replies) || replies.length !== calls.length) throw new Error("Incomplete RPC batch");
       const byId = new Map(replies.map((reply) => [reply.id, reply]));
       return calls.map((_, index) => {
@@ -85,7 +82,8 @@ export interface AttributionSnapshot {
 }
 
 export async function readAttributionSnapshot(tokenAddress: string, vaultAddress: string, walletAddress: string, excluded: string[], tokenSymbol: string): Promise<AttributionSnapshot> {
-  const blockHex = await rpc("eth_blockNumber", []);
+  const [chainHex, blockHex] = await Promise.all([rpc("eth_chainId", []), rpc("eth_blockNumber", [])]);
+  if (typeof chainHex !== "string" || !UINT_HEX.test(chainHex) || BigInt(chainHex) !== BigInt(ROBINHOOD_CHAIN.id)) throw new Error("Unexpected RPC chain");
   if (typeof blockHex !== "string" || !UINT_HEX.test(blockHex)) throw new Error("Invalid RPC block number");
   const block = Number(BigInt(blockHex));
   if (!Number.isSafeInteger(block)) throw new Error("Invalid RPC block number");

@@ -6,6 +6,7 @@ import {
   formatUnits,
   isEvmAddress,
   normalizeExcludedAddresses,
+  parseTokenBalancePayload,
   parseTokenBalanceRows,
   proRataAllocation,
   safeProduct,
@@ -65,6 +66,13 @@ test("Blockscout token rows are bounded, validated, and deduplicated", () => {
   assert.deepEqual(parseTokenBalanceRows([{ ...row, token: { ...row.token, decimals: "1000000000" } }]), []);
   assert.deepEqual(parseTokenBalanceRows([{ ...row, token: { ...row.token, symbol: "X".repeat(81) } }]), []);
   assert.throws(() => parseTokenBalanceRows(Array.from({ length: 201 }, () => row)), /too many/i);
+  const diagnostics = parseTokenBalancePayload([row, { ...row, value: "-1" }]);
+  assert.equal(diagnostics.rows.length, 1);
+  assert.equal(diagnostics.rejected, 1);
+  assert.equal(diagnostics.inputCount, 2);
+  const ignored = parseTokenBalancePayload([{ ...row, token: { ...row.token, type: "ERC-721" } }]);
+  assert.equal(ignored.rows.length, 0);
+  assert.equal(ignored.rejected, 0);
 });
 
 test("allocations never exceed their vault balance", () => {
