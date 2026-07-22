@@ -5,15 +5,15 @@ import { fetchActiveTradeResponse, parseActiveTradesPayload } from "@/lib/trades
 
 export const dynamic = "force-dynamic";
 
-const REFERENCE_TRADER = "0xB01563b292657D3BAA82a2D62EFA7679765CB718";
+const REFERENCE_TRADER = "0x9f736F87E6293AC1Bd9142E257dbfAC8b7AcF1ae";
 const REFERENCE_PERFORMANCE = {
   status: "profitable",
-  pnlUsd: 47.57,
-  roiPct: 0.0247,
-  swapCount: 445,
-  notionalUsd: 192312.66,
-  verifiedAt: "2026-07-21T14:40:55.000Z",
-  methodology: "24h net swap inflows minus outflows, marked using current Blockscout token rates; wrapped assets valued at their underlying token rate.",
+  pnlUsd: 176202.65,
+  roiPct: 3.461083,
+  swapCount: 18070,
+  notionalUsd: 5090968.9,
+  verifiedAt: "2026-07-22T10:53:00.870Z",
+  methodology: "24h priced ERC-20 inflows minus outflows, marked at current Blockscout rates; three unpriced positive-net assets excluded.",
 } as const;
 const MAX_BODY_BYTES = 120_000;
 const rateBuckets = new Map<string, { reset: number; count: number }>();
